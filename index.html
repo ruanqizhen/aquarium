@@ -4916,22 +4916,22 @@ function startTank(){
   scene.background = new THREE.Color(0x0a4a73);
   scene.fog = new THREE.FogExp2(0x0a4a73, 0.023);
 
-  var camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 0.1, 120);
-  function fitCamera(){ var a=window.innerWidth/Math.max(window.innerHeight,1); camera.aspect=a; camera.fov=a<1?80:55; camera.updateProjectionMatrix(); }
+  var camera = new THREE.PerspectiveCamera(59, window.innerWidth/window.innerHeight, 0.1, 120);
+  function fitCamera(){ var a=window.innerWidth/Math.max(window.innerHeight,1); camera.aspect=a; camera.fov=a<1?84:59; camera.updateProjectionMatrix(); }
   fitCamera();
-  camera.position.set(0, 3.6, window.innerWidth<window.innerHeight ? 23 : 15);
+  camera.position.set(0, 3.9, window.innerWidth<window.innerHeight ? 21 : 13.2);
 
   var hemi = new THREE.HemisphereLight(0xbfe3ff, 0x8a7a5a, 0.55); scene.add(hemi);
   var ambient = new THREE.AmbientLight(0x9fd8ff, 0.35); scene.add(ambient);
   var sun = new THREE.DirectionalLight(0xfff2cf, 1.1);
   sun.position.set(6, 12, 7); sun.castShadow = true;
   sun.shadow.mapSize.set(1024,1024);
-  sun.shadow.camera.left=-18; sun.shadow.camera.right=18; sun.shadow.camera.top=14; sun.shadow.camera.bottom=-6;
+  sun.shadow.camera.left=-23; sun.shadow.camera.right=23; sun.shadow.camera.top=14; sun.shadow.camera.bottom=-6;
   scene.add(sun);
   var fill = new THREE.PointLight(0x3ec6ff, 60, 60, 1.6); fill.position.set(-8,4,6); scene.add(fill);
   var warm = new THREE.PointLight(0xffb36b, 0.0, 26, 1.6); warm.position.set(7,1.2,-2); scene.add(warm); // night lamp
 
-  var TANK = {x:15, yMin:0.7, yMax:7.2, zMin:-5.5, zMax:5.5};
+  var TANK = {x:18.5, yMin:0.45, yMax:7.85, zMin:-6, zMax:6};
 
   function rand(a,b){ return a + Math.random()*(b-a); }
   function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
@@ -5015,10 +5015,10 @@ function startTank(){
 
   // god rays
   var rays=[];
-  for(var ri=0; ri<5; ri++){
+  for(var ri=0; ri<7; ri++){
     var ray=new THREE.Mesh(new THREE.PlaneGeometry(rand(1.6,3.4),17),
       new THREE.MeshBasicMaterial({map:rayTex, transparent:true, opacity:rand(0.06,0.12), blending:THREE.AdditiveBlending, depthWrite:false, side:THREE.DoubleSide}));
-    ray.position.set(rand(-11,11), 4.2, rand(-4,-1)); ray.rotation.z=0.32; scene.add(ray); rays.push(ray);
+    ray.position.set(rand(-17,17), 4.2, rand(-5,-0.5)); ray.rotation.z=0.32; scene.add(ray); rays.push(ray);
   }
 
   // rocks — displaced geometry + mottled texture reads as real reef rock
@@ -5034,14 +5034,15 @@ function startTank(){
     var m=new THREE.Mesh(geo, rockMat);
     m.position.set(x, (y===undefined? s*0.32 : y), z); m.rotation.set(rand(0,3),rand(0,3),rand(0,3)); m.scale.y=0.62; m.castShadow=m.receiveShadow=true; scene.add(m); return m;
   }
-  [[-11,-3,2.2],[-9.5,-2.4,1.4],[10.5,-3.2,2.5],[12,-2.2,1.5],[-4,-4.6,1.6],[5,-4.8,1.8],[0,-5.2,1.2],[-13,1,1.3],[13.5,0.5,1.4],[-6.5,3.4,0.8],[3.2,4.4,0.7],[9.5,3.8,0.9],[-10.6,-3.0,1.05,1.85],[11.3,-3.0,1.15,2.0]].forEach(function(r){ rock(r[0],r[1],r[2],r[3]); });
+  // rocks spread one-by-one across the whole floor — no end piles
+  [[-16.8,-4.6,2.3],[-10.4,-2.4,1.4],[16.3,-4.6,2.6],[17.2,-0.8,1.5],[-5.1,-5.1,1.6],[6.9,-5.2,1.9],[0.6,-3.4,1.2],[-17.3,1.8,1.35],[11.9,-2,1.45],[-8.8,4.3,0.85],[3.4,5,0.75],[14.7,4.7,0.95],[-14,3.4,1.1,1.9],[10.9,1,1.2,2.05],[-1.9,-1.1,0.9],[-12.7,-5.2,1.25],[16.9,3.6,1.1]].forEach(function(r){ rock(r[0],r[1],r[2],r[3]); });
 
   // scattered pebbles on the sand
   (function(){
-    var peb=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(0.09,0), envMat('rock', {roughness:1}, 0.7), 130);
+    var peb=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(0.09,0), envMat('rock', {roughness:1}, 0.7), 170);
     var dummy=new THREE.Object3D(); var col=new THREE.Color();
-    for(var i=0;i<130;i++){
-      dummy.position.set(rand(-15,15), 0.03, rand(-5.4,5.2));
+    for(var i=0;i<170;i++){
+      dummy.position.set(rand(-19,19), 0.03, rand(-6,5.8));
       dummy.rotation.set(rand(0,3),rand(0,3),rand(0,3));
       dummy.scale.set(rand(0.5,1.7), rand(0.3,0.7), rand(0.5,1.7));
       dummy.updateMatrix(); peb.setMatrixAt(i, dummy.matrix);
@@ -5064,8 +5065,9 @@ function startTank(){
     branch(new THREE.Vector3(0,0,0), new THREE.Vector3(rand(-0.15,0.15),1,rand(-0.15,0.15)), 0.85*scale, 0.13*scale, 3);
     g.position.set(x,0,z); scene.add(g); return g;
   }
-  branchCoral(-12.6,-0.6,0xcf7396,1.15); branchCoral(12.9,-0.9,0xd98a4e,1.3); branchCoral(-6.4,-3.9,0x9a86c8,0.9);
-  branchCoral(3.1,-4.3,0xc9554f,1.0); branchCoral(8.9,-4.1,0xd9a441,0.8); branchCoral(-3.4,-4.7,0x3bb3a6,0.75);
+  branchCoral(-16.2,3.0,0xcf7396,1.15); branchCoral(16.6,3.6,0xd98a4e,1.3); branchCoral(-7.2,-4.6,0x9a86c8,0.9);
+  branchCoral(2.8,-5.0,0xc9554f,1.0); branchCoral(12.4,-4.8,0xd9a441,0.8); branchCoral(-1.2,4.5,0x3bb3a6,0.75);
+  branchCoral(-11.2,-5.2,0xd98a4e,0.85); branchCoral(7.6,5.0,0xcf7396,0.8);
 
   function tubeCoral(x,z,color,n,scale){
     var g=new THREE.Group(); var mat=envMat('rock', {color:color, roughness:0.65, emissive:0xffffff, emissiveIntensity:0.06}, 0.3, true);
@@ -5076,10 +5078,10 @@ function startTank(){
       rim.rotation.x=Math.PI/2; rim.position.copy(tube.position); rim.position.y=hh; g.add(rim); }
     g.position.set(x,0,z); scene.add(g); return g;
   }
-  tubeCoral(-7.8,-1.8,0xcf7a52,7,1); tubeCoral(7.2,-2.2,0x9a6bb5,6,1); tubeCoral(1.8,-4.9,0x3d9db5,8,0.9);
+  tubeCoral(-11.8,-1.0,0xcf7a52,7,1); tubeCoral(15.0,-2.8,0x9a6bb5,6,1); tubeCoral(-2.4,-5.4,0x3d9db5,8,0.9); tubeCoral(5.4,5.1,0xcf7a52,6,0.85);
 
   // brain corals + anemones
-  [[-3,2.8,0xffffff,1.0],[6.8,3.1,0xcfe4bb,0.85],[11,2.2,0xf2cfc4,0.7]].forEach(function(b){
+  [[-5.6,3.7,0xffffff,1.0],[10.1,4.8,0xcfe4bb,0.85],[-15.5,-2.1,0xf2cfc4,0.7],[16.3,1.9,0xffffff,0.8],[0.9,-2.4,0xcfe4bb,0.7]].forEach(function(b){
     var bg=new THREE.SphereGeometry(b[3],26,18);
     var bp=bg.attributes.position; var bv=new THREE.Vector3(); var bs=rand(0,20), bs2=rand(0,20);
     for(var i=0;i<bp.count;i++){ bv.fromBufferAttribute(bp,i);
@@ -5099,7 +5101,7 @@ function startTank(){
       var a=(i/26)*Math.PI*2, r=rand(0.05,0.28); t.position.set(Math.cos(a)*r, 0.6, Math.sin(a)*r); t.rotation.set(rand(-0.35,0.35),0,rand(-0.35,0.35)); g.add(t); }
     g.position.set(x,0,z); scene.add(g); anemones.push(g); return g;
   }
-  anemone(-8.6,1.6,0xf2a7d8); anemone(3.4,-3.4,0x8fd694); anemone(10.8,1.4,0xffd76a);
+  anemone(-13.1,4.8,0xf2a7d8); anemone(1.6,-1.9,0x8fd694); anemone(15.9,0.7,0xffd76a); anemone(-6.6,-3.6,0xf2a7d8);
 
   // starfish
   function starfish(x,z,color){
@@ -5107,7 +5109,7 @@ function startTank(){
     var m=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth:0.09, bevelEnabled:true, bevelSize:0.04, bevelThickness:0.04}), new THREE.MeshStandardMaterial({color:color, roughness:0.85}));
     m.rotation.x=-Math.PI/2; m.rotation.z=rand(0,3); m.position.set(x,0.05,z); scene.add(m);
   }
-  starfish(-2.2,3.6,0xff7f50); starfish(8.8,4.2,0xffa502); starfish(-12,3.4,0xe55039);
+  starfish(-2.0,2.5,0xff7f50); starfish(11.5,2.7,0xffa502); starfish(-17.0,5.0,0xe55039); starfish(5.6,-3.4,0xffa502); starfish(-9.8,5.4,0xff7f50);
 
   // treasure chest (classic aquarium ornament)
   (function(){
@@ -5117,7 +5119,7 @@ function startTank(){
     var box=new THREE.Mesh(new THREE.BoxGeometry(1.15,0.6,0.75), wood); box.position.y=0.3; box.castShadow=true; g.add(box);
     var lid=new THREE.Mesh(new THREE.CylinderGeometry(0.38,0.38,1.15,12,1,false,0,Math.PI), wood); lid.rotation.z=Math.PI/2; lid.rotation.y=Math.PI/2; lid.position.y=0.6; lid.rotation.x=0; g.add(lid);
     for(var i=0;i<9;i++){ var coin=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.03,10), gold); coin.position.set(rand(-0.75,0.75),0.06,rand(0.5,0.95)); coin.rotation.y=rand(0,3); g.add(coin); }
-    g.position.set(6.2,0,2.6); g.rotation.y=-0.5; scene.add(g);
+    g.position.set(9.4,0,3.4); g.rotation.y=-0.5; scene.add(g);
   })();
 
   /* ---------- plants: real photographs, cut out like the fish fins ----------
@@ -5142,9 +5144,11 @@ function startTank(){
     }
     g.position.set(x, -h*PLANT_SINK[kind], z); scene.add(g); plants.push({g:g, phase:rand(0,6.28)}); return g;
   }
-  photoPlant(-14,-3.5,'vallis',4.6); photoPlant(-12.4,-4.5,'fern',3.4); photoPlant(13.8,-3.8,'vallis',4.9); photoPlant(11.8,-4.6,'redplant',3.1);
-  photoPlant(-6,-5,'fern',3.9); photoPlant(0.5,-5.3,'vallis',5.3); photoPlant(8,-5,'fern',3.5); photoPlant(-14.5,1.5,'redplant',2.8); photoPlant(14.6,1.8,'vallis',3.7);
-  photoPlant(-1.5,4.9,'anubias',1.5); photoPlant(5.5,5.1,'anubias',1.35); photoPlant(-10.6,0.9,'anubias',1.2); photoPlant(10.4,3.9,'fern',2.5); photoPlant(-4.6,4.7,'redplant',2.1);
+  photoPlant(-17,-5.3,'vallis',5.8); photoPlant(-13.5,-5.1,'fern',4.0); photoPlant(-8,-5.4,'vallis',6.3); photoPlant(-2.6,-5.2,'fern',4.4);
+  photoPlant(3.2,-5.4,'vallis',6.0); photoPlant(8.8,-5.1,'fern',4.1); photoPlant(14,-5.3,'redplant',3.6); photoPlant(17.2,-5.2,'vallis',5.5);
+  photoPlant(-17.3,0.3,'redplant',3.0); photoPlant(17.4,1.7,'vallis',4.0); photoPlant(-11.5,-2.6,'fern',3.2); photoPlant(11.8,-2.9,'redplant',3.3);
+  photoPlant(-13.8,5.1,'anubias',1.5); photoPlant(-6.8,5.3,'redplant',2.3); photoPlant(1.8,5.2,'anubias',1.45); photoPlant(8.6,5.4,'fern',2.7);
+  photoPlant(15.6,5.1,'anubias',1.3); photoPlant(-0.6,4.9,'anubias',1.2);
 
   // driftwood centrepiece: a real spiderwood photograph on a gently arched plane
   (function(){
@@ -5155,7 +5159,7 @@ function startTank(){
     geo.computeVertexNormals();
     var m=new THREE.Mesh(geo, envMat('driftwood', {roughness:0.8, side:THREE.DoubleSide, alphaTest:0.30, emissive:0xffffff, emissiveIntensity:0.08}, 0));
     m.position.y=1.5; g.add(m);
-    g.position.set(-3.6,0,-0.6); g.rotation.y=0.45; g.rotation.z=-0.03; scene.add(g);
+    g.position.set(-6.8,0,-0.8); g.rotation.y=0.45; g.rotation.z=-0.03; scene.add(g);
   })();
 
   /* ============================================================
@@ -5418,6 +5422,7 @@ function startTank(){
     loadPhoto(s, 'tailTex', window.FISH_TEXTURES[s.paint+'-tail'], s.tailBase);
   });
 
+  var spawnCell=0; // stratified-spawn counter, see createFish
   function createFish(sp){
     var group=new THREE.Group();
     var bodyG=new THREE.Group(); group.add(bodyG);
@@ -5464,14 +5469,20 @@ function startTank(){
     var finL=pec(1), finR=pec(-1);
 
     group.scale.setScalar(sp.size);
-    group.position.set(rand(-11,11), rand(1.2,6.4), rand(-4,4));
+    // stratified start: each new fish takes the next cell of a 10-wide x 4-deep
+    // floor grid (four height layers rotate per lap), so the school opens spread
+    // across the whole tank — edge to edge, surface to sand — instead of
+    // clumping wherever randomness drops it
+    var cell=spawnCell++;
+    var ccx=cell%10, ccz=Math.floor(cell/10)%4, ccy=Math.floor(cell/40)%4;
+    group.position.set(-16.6+(ccx+0.5)*3.32+rand(-1.2,1.2), 1.0+ccy*2.1+rand(-0.5,0.5), -5.4+(ccz+0.5)*2.7+rand(-0.9,0.9));
     scene.add(group);
 
     return {
       sp:sp, group:group, bodyG:bodyG, tailPivot:tailPivot, finL:finL, finR:finR, bendParts:bendParts,
       vel:new THREE.Vector3(rand(-1,1),0,rand(-1,1)).normalize().multiplyScalar(sp.speed),
       prevVel:new THREE.Vector3(0,0,1),
-      target:new THREE.Vector3(rand(-12,12), rand(1,6.5), rand(-4.5,4.5)),
+      target:new THREE.Vector3(rand(-16,16), rand(0.8,7.6), rand(-5.2,5.2)),
       phase:rand(0,6.28), wagPh:rand(0,6.28), rowPh:rand(0,6.28), bank:0, retarget:rand(2,7), speed:sp.speed*rand(0.85,1.2)
     };
   }
@@ -5490,8 +5501,8 @@ function startTank(){
   var bubbleGroup=new THREE.Group(); scene.add(bubbleGroup);
   var bubbleMat=new THREE.MeshPhongMaterial({color:0xdff6ff, transparent:true, opacity:0.38, shininess:120, specular:0xffffff});
   var bubbles=[];
-  var emitters=[new THREE.Vector3(6.2,0.5,2.6), new THREE.Vector3(-7.8,0.6,-1.8), new THREE.Vector3(9.8,0.5,-3.4)];
-  for(var bi=0; bi<60; bi++){
+  var emitters=[new THREE.Vector3(9.4,0.5,3.4), new THREE.Vector3(-11.8,0.6,-1.0), new THREE.Vector3(15.0,0.5,-2.8), new THREE.Vector3(-2.4,0.6,-5.4)];
+  for(var bi=0; bi<80; bi++){
     var r=rand(0.03,0.09);
     var b=new THREE.Mesh(new THREE.SphereGeometry(r,10,8), bubbleMat);
     var e=pick(emitters); b.position.set(e.x+rand(-0.3,0.3), rand(0.4,8), e.z+rand(-0.3,0.3));
@@ -5499,8 +5510,8 @@ function startTank(){
   }
   var plankton;
   (function(){
-    var n=260, pos=new Float32Array(n*3);
-    for(var i=0;i<n;i++){ pos[i*3]=rand(-16,16); pos[i*3+1]=rand(0.3,7.8); pos[i*3+2]=rand(-6,6); }
+    var n=340, pos=new Float32Array(n*3);
+    for(var i=0;i<n;i++){ pos[i*3]=rand(-21,21); pos[i*3+1]=rand(0.3,8.0); pos[i*3+2]=rand(-7,7); }
     var geo=new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
     var spriteC=document.createElement('canvas'); spriteC.width=spriteC.height=64; var sg=spriteC.getContext('2d');
     var sgr=sg.createRadialGradient(32,32,0,32,32,32); sgr.addColorStop(0,'rgba(255,255,255,1)'); sgr.addColorStop(0.4,'rgba(210,240,255,.7)'); sgr.addColorStop(1,'rgba(210,240,255,0)');
@@ -5528,12 +5539,12 @@ function startTank(){
   canvas.addEventListener('pointerdown', function(e){
     ndc.set((e.clientX/window.innerWidth)*2-1, -((e.clientY/window.innerHeight)*2-1));
     raycaster.setFromCamera(ndc, camera);
-    if(raycaster.ray.intersectPlane(hitPlane, hitPoint)){ dropFood(THREE.MathUtils.clamp(hitPoint.x,-13,13), THREE.MathUtils.clamp(hitPoint.z,-4,4), 8); }
-    else dropFood(rand(-4,4), 0, 8);
+    if(raycaster.ray.intersectPlane(hitPlane, hitPoint)){ dropFood(THREE.MathUtils.clamp(hitPoint.x,-16.5,16.5), THREE.MathUtils.clamp(hitPoint.z,-5.2,5.2), 8); }
+    else dropFood(rand(-9,9), 0, 8);
     wake();
   });
 
-  document.getElementById('feedBtn').addEventListener('click', function(){ dropFood(rand(-5,5), rand(-2,2), 12); });
+  document.getElementById('feedBtn').addEventListener('click', function(){ dropFood(rand(-11,11), rand(-3.5,3.5), 12); });
   document.getElementById('bubbleBtn').addEventListener('click', function(){
     bubbleGroup.visible=!bubbleGroup.visible; this.classList.toggle('on', bubbleGroup.visible); this.setAttribute('aria-pressed', bubbleGroup.visible);
   });
@@ -5567,7 +5578,7 @@ function startTank(){
   }
   tickClock(); setInterval(tickClock, 10000);
 
-  function camDist(){ var a=window.innerWidth/Math.max(window.innerHeight,1); return a>=1 ? 15 : 15+(1-a)*13; }
+  function camDist(){ var a=window.innerWidth/Math.max(window.innerHeight,1); return a>=1 ? 13.2 : 13.2+(1-a)*12; }
   window.addEventListener('resize', function(){
     fitCamera();
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -5586,10 +5597,10 @@ function startTank(){
     var speedMul=isNight?0.55:1;
 
     // camera: slow tour + mouse parallax
-    if(tour){ camTarget.set(Math.sin(t*0.07)*3.4 + mouseX*1.6, 3.6+Math.sin(t*0.11)*0.55 - mouseY*0.7, camDist()); }
-    else { camTarget.set(mouseX*3.2, 3.6 - mouseY*1.1, camDist()); }
+    if(tour){ camTarget.set(Math.sin(t*0.07)*4.6 + mouseX*2.0, 3.9+Math.sin(t*0.11)*0.6 - mouseY*0.7, camDist()); }
+    else { camTarget.set(mouseX*3.6, 3.9 - mouseY*1.1, camDist()); }
     camera.position.lerp(camTarget, 0.03);
-    camera.lookAt(Math.sin(t*0.05)*1.5, 3.3, 0);
+    camera.lookAt(Math.sin(t*0.05)*1.8, 3.7, 0);
 
     // water surface waves
     var pos=surfGeo.attributes.position;
@@ -5642,15 +5653,35 @@ function startTank(){
           if(bd<0.30){ scene.remove(best.m); foods.splice(foods.indexOf(best),1); } }
       }
       if(!chasing && (f.retarget<=0 || f.group.position.distanceTo(goal)<1.2)){
-        f.target.set(rand(-13,13), rand(TANK.yMin+0.4, TANK.yMax), rand(TANK.zMin+0.6, TANK.zMax-0.6));
+        // pick the farthest of a few candidate spots: fish keep crossing the
+        // tank and settling in different areas instead of hovering in one patch
+        var bx=0, by=0, bz=0, bd=-1;
+        for(var ti=0; ti<8; ti++){ var tx=rand(-17.5,17.5), ty=rand(TANK.yMin+0.3, TANK.yMax), tz=rand(TANK.zMin+0.6, TANK.zMax-0.6);
+          var ddx=tx-f.group.position.x, ddy=ty-f.group.position.y, ddz=tz-f.group.position.z;
+          var dd=ddx*ddx+ddy*ddy+ddz*ddz;
+          if(dd>bd){ bd=dd; bx=tx; by=ty; bz=tz; } }
+        f.target.set(bx, by, bz);
         f.retarget=rand(3,8); goal=f.target;
       }
       var thrust=0.62+0.38*Math.sin(t*0.45+f.phase*3.0); // slow surge / glide cycle
       var desired=goal.clone().sub(f.group.position);
       desired.normalize().multiplyScalar(f.speed*speedMul*(chasing?1.75:(0.72+0.5*thrust)));
       desired.y=THREE.MathUtils.clamp(desired.y, chasing?-0.9:-0.38, chasing?0.9:0.38); // stay mostly level — no head-down dives
-      fishes.forEach(function(o){ if(o!==f){ var d=f.group.position.distanceTo(o.group.position); if(d<0.9 && d>0.001){ desired.add(f.group.position.clone().sub(o.group.position).normalize().multiplyScalar((0.9-d)*1.4)); } } });
-      f.vel.lerp(desired, 1-Math.pow(0.0015, dt)); // smooth steering
+      fishes.forEach(function(o){ if(o!==f){ var d=f.group.position.distanceTo(o.group.position); if(d<2.3 && d>0.001){ desired.add(f.group.position.clone().sub(o.group.position).normalize().multiplyScalar((2.3-d)*1.5)); } } });
+      // slow, capped turning: swing the heading toward the goal at a limited
+      // angular rate (about 0.8 rad/s cruising) and ease the speed separately,
+      // slowing a touch mid-turn — the fish carves a wide, lazy arc instead of
+      // snapping around or spinning in place. Chasing food up close it may
+      // turn quicker, or it would just orbit the pellet.
+      var curSpd=f.vel.length()||0.0001, desSpd=desired.length()||0.0001;
+      var curDir=f.vel.clone().divideScalar(curSpd), desDir=desired.clone().divideScalar(desSpd);
+      var errSin=curDir.x*desDir.z - curDir.z*desDir.x; // signed heading error, feeds the banking below
+      var angTo=Math.acos(THREE.MathUtils.clamp(curDir.dot(desDir),-1,1));
+      var maxTurn=(chasing ? (bd<9 ? 1.9 : 1.15) : 0.8)*speedMul*dt;
+      var newDir=angTo<=maxTurn ? desDir.clone() : curDir.clone().lerp(desDir, maxTurn/Math.max(angTo,0.0001)).normalize();
+      desSpd*=1-0.38*Math.min(1, angTo/2.2);
+      var newSpd=curSpd+(desSpd-curSpd)*Math.min(1, dt*1.4);
+      f.vel.copy(newDir).multiplyScalar(newSpd);
       f.group.position.addScaledVector(f.vel, dt);
       f.group.position.y+=Math.sin(t*1.6+f.phase)*0.0018;
       f.group.position.x=THREE.MathUtils.clamp(f.group.position.x,-TANK.x,TANK.x);
@@ -5659,26 +5690,34 @@ function startTank(){
 
       var look=f.group.position.clone().add(f.vel);
       f.group.lookAt(look);
-      // banking: roll proportional to turn rate, smoothed
-      var turnRate=f.prevVel.x*f.vel.z - f.prevVel.z*f.vel.x;
-      var targetBank=THREE.MathUtils.clamp(turnRate*2.4, -0.42, 0.42);
-      f.bank += (targetBank-f.bank)*Math.min(1, dt*5);
+      // banking leads the turn: the roll builds from the heading error first
+      // (body tips before the arc starts), then follows the actual yaw rate;
+      // the same smoothed yaw bends the body into the curve (see turnCurve)
+      var pl=f.prevVel.length(), cl2=f.vel.length();
+      var sinT=(pl>0.01&&cl2>0.01) ? (f.prevVel.x*f.vel.z - f.prevVel.z*f.vel.x)/(pl*cl2) : 0;
+      var yawRate=sinT/Math.max(dt,0.001);
+      f.yawSm=(f.yawSm||0)+(yawRate-(f.yawSm||0))*Math.min(1, dt*3.5);
+      var targetBank=THREE.MathUtils.clamp(errSin*1.5 + f.yawSm*0.30, -0.52, 0.52);
+      f.bank += (targetBank-f.bank)*Math.min(1, dt*3.2);
+      f.turnCurve=THREE.MathUtils.clamp(f.yawSm*0.10, -0.13, 0.13);
       f.group.rotateZ(f.bank);
       f.prevVel.copy(f.vel);
 
       // undulation: a travelling wave bends every body & fin vertex — head nearly still,
       // amplitude growing toward the tail; frequency follows actual speed
       var spd=f.vel.length();
-      f.wagPh += dt*(4.0+spd*5.2)*speedMul*(chasing?1.3:1);
+      // tail beat follows the turn too: a fish mid-arc beats a little harder
+      var turnWork=Math.min(1, Math.abs(f.yawSm||0));
+      f.wagPh += dt*(4.0+spd*5.2)*speedMul*(chasing?1.3:1)*(1+0.3*turnWork);
       var spdF=Math.min(spd/1.7,1);
-      var amp=(0.045+0.125*spdF)*(chasing?1.2:1);
+      var amp=(0.045+0.125*spdF)*(chasing?1.2:1)*(1+0.45*turnWork);
       var parts=f.bendParts;
       for(var pi=0; pi<parts.length; pi++){
         var P=parts[pi], posA=P.geo.attributes.position, arr=posA.array, base=P.base, wA=P.w, phA=P.ph;
         if(P.axis==='x'){
-          for(var vi=0; vi<posA.count; vi++) arr[vi*3]=base[vi*3]+Math.sin(f.wagPh-phA[vi])*amp*wA[vi];
+          for(var vi=0; vi<posA.count; vi++) arr[vi*3]=base[vi*3]+Math.sin(f.wagPh-phA[vi])*amp*wA[vi]+f.turnCurve*wA[vi];
         } else {
-          for(var vj=0; vj<posA.count; vj++) arr[vj*3+2]=-Math.sin(f.wagPh-phA[vj])*amp*wA[vj];
+          for(var vj=0; vj<posA.count; vj++) arr[vj*3+2]=-Math.sin(f.wagPh-phA[vj])*amp*wA[vj]-f.turnCurve*wA[vj];
         }
         posA.needsUpdate=true;
         if(P.norm && ((frameNo+fIdx)%5===0)) P.geo.computeVertexNormals();
